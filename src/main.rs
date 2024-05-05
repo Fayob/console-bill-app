@@ -20,6 +20,10 @@ impl Bills {
     fn add(&mut self, bill: Bill){
         self.inner.insert(bill.name.to_string(), bill);
     }
+
+    fn get_all(&self) -> Vec<&Bill> {
+        self.inner.values().collect()
+    }
 }
 
 fn get_input() -> Option<String> {
@@ -70,16 +74,24 @@ mod menu {
         bills.add(bill);
         println!("Bill added");
     }
+
+    pub fn view_bills(bills: &Bills) {
+        for bill in bills.get_all() {
+            println!("{:?}", bill);
+        }
+    }
 }
 
 enum MainMenu {
     AddBill,
+    ViewBill,
 }
 
 impl MainMenu {
     fn from_str(input: &str) -> Option<MainMenu> {
         match input {
             "1" => Some(Self::AddBill),
+            "2" => Some(Self::ViewBill),
             _ => None,
         }
     }
@@ -88,6 +100,7 @@ impl MainMenu {
         println!("");
         println!(" == Bill Manager ==");
         println!("1. Add Bill");
+        println!("2. View Bill");
         println!("");
         print!("Enter selection: ");
     }
@@ -101,6 +114,7 @@ fn main () {
         let input = get_input().expect("no data entered");
         match MainMenu::from_str(&input){
             Some(MainMenu::AddBill) => menu::add_bill(&mut bills),
+            Some(MainMenu::ViewBill) => menu::view_bills(&bills),
             None => return,
         }
     }
