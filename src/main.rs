@@ -24,6 +24,10 @@ impl Bills {
     fn get_all(&self) -> Vec<&Bill> {
         self.inner.values().collect()
     }
+
+    fn remove(&mut self, name: &str) -> bool {
+        self.inner.remove(name).is_some()
+    }
 }
 
 fn get_input() -> Option<String> {
@@ -80,11 +84,29 @@ mod menu {
             println!("{:?}", bill);
         }
     }
+
+    pub fn remove_bill(bills: &mut Bills) {
+        for bill in bills.get_all() {
+            println!("{:?}", bill)
+        }
+        println!("Enter bill name to remove:");
+
+        let name = match get_input() {
+            Some(name) => name,
+            None => return,
+        };
+        if bills.remove(&name) {
+            println!("bill removed")
+        } else {
+            println!("bill not found")
+        }
+    }
 }
 
 enum MainMenu {
     AddBill,
     ViewBill,
+    RemoveBill,
 }
 
 impl MainMenu {
@@ -92,6 +114,7 @@ impl MainMenu {
         match input {
             "1" => Some(Self::AddBill),
             "2" => Some(Self::ViewBill),
+            "3" => Some(Self::RemoveBill),
             _ => None,
         }
     }
@@ -101,6 +124,7 @@ impl MainMenu {
         println!(" == Bill Manager ==");
         println!("1. Add Bill");
         println!("2. View Bill");
+        println!("3. Remove Bill");
         println!("");
         print!("Enter selection: ");
     }
@@ -115,6 +139,7 @@ fn main () {
         match MainMenu::from_str(&input){
             Some(MainMenu::AddBill) => menu::add_bill(&mut bills),
             Some(MainMenu::ViewBill) => menu::view_bills(&bills),
+            Some(MainMenu::RemoveBill) => menu::remove_bill(&mut bills),
             None => return,
         }
     }
